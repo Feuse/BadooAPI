@@ -238,7 +238,7 @@
             "user_field_filter_webrtc_start_call": { "projection": [ 200, 490 ] },
             "user_field_filter_client_login_success": { "projection": [ 310, 90, 490, 290, 100, 291, 50, 230, 340, 200, 210, 690, 91, 93, 460, 10, 220, 1000 ] },
             "user_field_filter_chat_message_from": { "projection": [ 210, 230, 200 ] },
-            "hotpanel_session_id": "77db52a2-b843-4702-bcb2-059b9d19f6c2",
+            "hotpanel_session_id": "",
             "device_id": "dea7e406-e406-0673-7320-204ea681b655",
             "a_b_testing_settings": {
               "tests": [
@@ -268,7 +268,7 @@
     },
     "headers": {
       "X-Pingback": "ed891794b88a2507a50abbc384f51627",
-      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=zAhMACTc2NzI5NTc0MwAgWrDpC9rr1iw6aK6ymQ_dZwe5dcp_sm7ogScHU26wcoE; session=s4:379:7HjUdsadsxyEhQ3HDEBpbL2Uj5nV9sy8jRU; has_secure_session=1"
+      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=id; session=s4:379:7HjUdsadsxyEhQ3HDEBpbL2Uj5nV9sy8jRU; has_secure_session=1"
     }
   },
   "Login": {
@@ -294,7 +294,7 @@
     "headers": {
       "Pingback": "X-Pingback=ping",
       "X-Use-Session-Cookie": 1,
-      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=hghgh; session=s1:9999:EiFa41M37XKSOApDlPy7Ud57J9nSIFbQmKZ6cn8S; cclick=signin%2C1627488256267"
+      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=id; session=s1:9999:EiFa41M37XKSOApDlPy7Ud57J9nSIFbQmKZ6cn8S; cclick=signin%2C1627488256267"
     }
   },
   "LoginUS": {
@@ -352,7 +352,7 @@
       "is_background": false
     },
     "headers": {
-      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs; has_secure_session=1; session=s1:134:MSns0e1TkWtcwBklolxre3YOwMrzcYAMhtDCQSmi",
+      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=id; has_secure_session=1; session=s1:134:MSns0e1TkWtcwBklolxre3YOwMrzcYAMhtDCQSmi",
       "UserId": "X-Userid=xid",
       "Pingback": "X-Pingback=xping",
       "X-Use-Session-Cookie": 1
@@ -379,7 +379,7 @@
       "is_background": false
     },
     "headers": {
-      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs; has_secure_session=1; session=s1:379:xDQgBs1SlezdqJ9VYBNQgcsCrNCfjfyRGXGnU5VX",
+      "Cookie": "session_cookie_name=session; device_id=dea7e406-e406-0673-7320-204ea681b655; first_web_visit_id=fff2b2a2cc246057c1051194226e2ed933286ae2; fbm_107433747809=base_domain=.badoo.com; aid=746396952; pid=1; cpc=%7B%22c%22%3A0%2C%22e%22%3A1629890659244%2C%22d%22%3A%22am1.badoo.com%22%2C%22u%22%3A%22zAhMACTc0NjM5Njk1MgAgRg_BzHq_BiIVRdfc6q4dd1Vlzys7sUILiMUsTZLzOCs%22%7D; wpr=1; TS=1627488245%7C2; last_referred_web_visit_id=454bd3385cb0f7488c3dc7388e5f9d3d111f76b7; HDR-X-User-id=id; has_secure_session=1; session=s1:379:xDQgBs1SlezdqJ9VYBNQgcsCrNCfjfyRGXGnU5VX",
       "Pingback": "X-Pingback=xping",
       "X-Use-Session-Cookie": 1
     }
