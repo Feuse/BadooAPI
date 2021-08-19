@@ -1,24 +1,15 @@
-using Microsoft.AspNetCore.Authentication;
+using BadooAPI.Factories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
-using Microsoft.JSInterop;
-using Microsoft.OpenApi.Models;
 using RabbitMQScheduler;
 using RabbitMQScheduler.Interfaces;
-using Services.Server.Factories;
-using Services.Server.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RabbitMQScheduler.ServicesImpl;
+using ServicesInterfaces;
 
 namespace Services.Server
 {
@@ -28,7 +19,7 @@ namespace Services.Server
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            //_scheduler = QuartzInstance.Instance;
+            _scheduler = QuartzInstance.Instance;
         }
 
         public IConfiguration Configuration { get; }
@@ -36,24 +27,34 @@ namespace Services.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IJsonFactory, JsonFactory>();
-           // services.AddSingleton<IScheduler, Scheduler>();
+            services.AddCors();
+            services.AddTransient<IServicesFactory, ServicesFactory>();
+            services.AddTransient<IScheduler, Scheduler>();
+            services.AddTransient<IQueue, QueueImpl>();
+            services.AddTransient<SchedulerJob>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
             services.AddControllers();
-          
+            services.AddSingleton(provider => _scheduler);
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-              
+
             }
 
+            _scheduler.JobFactory = new AspnetCoreJobFactory(app.ApplicationServices);
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -66,5 +67,6 @@ namespace Services.Server
                 endpoints.MapControllers();
             });
         }
+
     }
 }

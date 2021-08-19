@@ -5,7 +5,17 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Server", "Services.Server.csproj", "{3757261C-06AB-4E29-A8CB-BBBE57AF8116}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQScheduler", "..\RabbitMQScheduler\RabbitMQScheduler.csproj", "{4A23956E-481C-4004-A043-CF6FB0967624}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuartzScheduler", "..\RabbitMQScheduler\QuartzScheduler.csproj", "{4A23956E-481C-4004-A043-CF6FB0967624}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadooAPI", "..\BadooAPI\BadooAPI.csproj", "{4456F0E2-6CB5-4B4B-95E4-235434142A91}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicesInterfaces", "..\ServicesInterfaces\ServicesInterfaces.csproj", "{B7A832DE-BAD0-4CC9-A104-60C372105197}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicesModels", "..\ServicesModels\ServicesModels.csproj", "{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQListenerService", "..\RabbitMQListenerService\RabbitMQListenerService.csproj", "{E00B835F-4903-4E0F-8575-322DB9A2E42F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "..\DataAccess\DataAccess.csproj", "{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +31,26 @@ Global
 		{4A23956E-481C-4004-A043-CF6FB0967624}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A23956E-481C-4004-A043-CF6FB0967624}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A23956E-481C-4004-A043-CF6FB0967624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4456F0E2-6CB5-4B4B-95E4-235434142A91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4456F0E2-6CB5-4B4B-95E4-235434142A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4456F0E2-6CB5-4B4B-95E4-235434142A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4456F0E2-6CB5-4B4B-95E4-235434142A91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7A832DE-BAD0-4CC9-A104-60C372105197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7A832DE-BAD0-4CC9-A104-60C372105197}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7A832DE-BAD0-4CC9-A104-60C372105197}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7A832DE-BAD0-4CC9-A104-60C372105197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
