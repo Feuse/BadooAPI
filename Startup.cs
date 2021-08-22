@@ -1,4 +1,6 @@
 using BadooAPI.Factories;
+using DataAccess;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,17 +30,27 @@ namespace Services.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSingleton<IDataAccess, DataAccess.DataAccess>();
             services.AddTransient<IServicesFactory, ServicesFactory>();
             services.AddTransient<IScheduler, Scheduler>();
             services.AddTransient<IQueue, QueueImpl>();
             services.AddTransient<SchedulerJob>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-
             services.AddControllers();
             services.AddSingleton(provider => _scheduler);
 
-
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.LoginPath = "/login";
+                options.Events = new CookieAuthenticationEvents()
+                {
+                    OnSigningIn = async context =>
+                    {
+                        var x = context;
+                        await System.Threading.Tasks.Task.CompletedTask;
+                    }
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
