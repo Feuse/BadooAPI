@@ -1,4 +1,4 @@
-# PrivateServiceAPI1
+# PrivateServicesServer
 My Badoo API interface that gives the ability to communicate with Badoo's private API
 
 ![Backend flow](https://user-images.githubusercontent.com/48961306/130067144-6f598834-fcf3-4d57-878d-91c353b64b64.jpg)
