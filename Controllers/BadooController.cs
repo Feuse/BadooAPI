@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using RabbitMQScheduler.Interfaces;
@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Services.Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/")]
     public class BadooController : ControllerBase
@@ -42,11 +43,10 @@ namespace Services.Server.Controllers
             //TEMP 
             data.Id = "611eabd43131a540a0a478f5";
             data.Service = Service.Badoo;
+            data.UserName = "Feuse132@gmail.com";
+            data.Password = "121233054a";
             await _dataAccess.RegisterService(data);
-            data.Service = Service.OkCupid;
-            await _dataAccess.RegisterService(data);
-            data.Service = Service.Badoo;
-            await _dataAccess.RemoveServiceFromUser(data);
+       
             //add to list
             var collection = database.GetCollection<UserCredentials>("test");
             var filter = Builders<UserCredentials>.Filter.Eq("Username", "uniquemail@gmail.com");
@@ -223,16 +223,23 @@ namespace Services.Server.Controllers
                 UserId = data.Id
             });
         }
-
-        public async Task<IList<Service>> AuthenticateUserServices(Data data)
+        [Route("authServices")]
+        [HttpPost]
+        public async Task<IActionResult> AuthenticateUserServices()
         {
+            var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var data = new Data() {Id=id };
+            data.XPing = "ed891794b88a2507a50abbc384f51627";
+           
             var servicesList = new List<Service>();
             var allUserServices = await _dataAccess.GetAllUserServicesById(data);
             foreach (var singleService in allUserServices)
             {
                 IService service = _factory.GetService(singleService.Service);
                 data.Service = singleService.Service;
-                await _dataAccess.GetUserServiceByServiceName(data);
+                data.UserName = singleService.Username;
+                data.Password = singleService.Password;
+               // await _dataAccess.GetUserServiceByServiceName(data); // no need? getting services from above
                 var result = await service.AppStartUp(data);
                 if (result.Result == Result.Success)
                 {
@@ -244,7 +251,7 @@ namespace Services.Server.Controllers
                     await _dataAccess.RemoveServiceFromUser(data);
                 }
             }
-            return servicesList;
+            return Ok(servicesList);
         }
     }
 }

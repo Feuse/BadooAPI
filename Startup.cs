@@ -18,6 +18,7 @@ namespace Services.Server
     public class Startup
     {
         private Quartz.IScheduler _scheduler { get; }
+        readonly string allowSpecificOrigins = "AllowAllHeaders";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,7 +30,16 @@ namespace Services.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddDistributedMemoryCache();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(allowSpecificOrigins, builder =>
+                {
+                    builder.WithOrigins("https://localhost")
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+                });
+            });
             services.AddSingleton<IDataAccess, DataAccess.DataAccess>();
             services.AddTransient<IServicesFactory, ServicesFactory>();
             services.AddTransient<IScheduler, Scheduler>();
@@ -37,10 +47,10 @@ namespace Services.Server
             services.AddTransient<SchedulerJob>();
             services.AddControllers();
             services.AddSingleton(provider => _scheduler);
-
+            services.AddSession();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
-                options.Cookie.HttpOnly = true;
+                options.Cookie.HttpOnly = false;
                 options.LoginPath = "/login";
                 options.Events = new CookieAuthenticationEvents()
                 {
@@ -49,17 +59,14 @@ namespace Services.Server
                         var x = context;
                         await System.Threading.Tasks.Task.CompletedTask;
                     }
-                };
+                    };
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+            app.UseCors(allowSpecificOrigins);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -73,7 +80,7 @@ namespace Services.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
