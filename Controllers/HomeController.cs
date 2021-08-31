@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using BadooAPI.Utills;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ServicesInterfaces;
 using ServicesModels;
 using System;
@@ -15,10 +17,13 @@ namespace Services.Server.Controllers
 {
     public class HomeController : Controller
     {
+
         private readonly IDataAccess _dataAccess;
         public HomeController(IDataAccess _dataAccess)
         {
+
             this._dataAccess = _dataAccess;
+
         }
         [AllowAnonymous]
         [HttpPost("register")]
@@ -31,12 +36,12 @@ namespace Services.Server.Controllers
                 await _dataAccess.RegisterUser(data);
                 await Login(new Data() { UserName = data.UserName, Password = data.Password, Id = data.Id });
                 ////TEMP
-                return Redirect("/success");
+                return Ok();
                 //return Redirect(returnUrl);
             }
             else
             {
-                return Redirect("/error");
+                return BadRequest();
             }
         }
         [AllowAnonymous]
@@ -53,6 +58,9 @@ namespace Services.Server.Controllers
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 await HttpContext.SignInAsync(claimsPrincipal);
+                CookieOptions options = new();
+                options.HttpOnly = false;
+                HttpContext.Response.Cookies.Append("username", result.Username, options);
                 // var username = HttpContext.User.FindFirst("username").Value;
                 //TEMP
                 return Ok(result.Username);
@@ -64,43 +72,13 @@ namespace Services.Server.Controllers
             }
         }
 
-        /// TEMP
-        [HttpGet("error")]
-        public async Task<string> Error()
-        {
-            return "error";
-        }
-
-        [HttpGet("success")]
-        public async Task<string> Success()
-        {
-            return "success";
-        }
         [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
             return Redirect("/");
         }
-        [Authorize]
-        [HttpPost("isLoggedIn")]
-        public async Task<string> IsLoggedIn(string ammount)
-        {
-            return ammount;
-        }
-        [Authorize]
-        [HttpPost("authUser")]
-        public async Task<string> AuthUser()
-        {
-            var username = HttpContext.User.FindFirst("username").Value;
-            var name = HttpContext.Session.GetString("username");
-            if (name is null)
-            {
-                HttpContext.Session.SetString("username", username);
-                return username;
-            }
-            return username;
-        }
+
         [Authorize]
         [HttpPost("checkOut")]
         public async Task<IActionResult> CheckOut(string ammount)
@@ -116,10 +94,5 @@ namespace Services.Server.Controllers
             }
             return Ok();
         }
-
-        
-
-        
-
     }
 }

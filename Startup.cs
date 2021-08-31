@@ -1,4 +1,5 @@
 using BadooAPI.Factories;
+using BadooAPI.Utills;
 using DataAccess;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +41,7 @@ namespace Services.Server
                     .AllowCredentials();
                 });
             });
+      
             services.AddSingleton<IDataAccess, DataAccess.DataAccess>();
             services.AddTransient<IServicesFactory, ServicesFactory>();
             services.AddTransient<IScheduler, Scheduler>();
@@ -47,10 +49,9 @@ namespace Services.Server
             services.AddTransient<SchedulerJob>();
             services.AddControllers();
             services.AddSingleton(provider => _scheduler);
-            services.AddSession();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
-                options.Cookie.HttpOnly = false;
+                options.Cookie.HttpOnly = true;
                 options.LoginPath = "/login";
                 options.Events = new CookieAuthenticationEvents()
                 {
@@ -80,7 +81,6 @@ namespace Services.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
