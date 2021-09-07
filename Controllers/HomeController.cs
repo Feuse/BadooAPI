@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using ServicesInterfaces;
 using ServicesModels;
@@ -13,25 +14,22 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
+
 namespace Services.Server.Controllers
 {
     public class HomeController : Controller
     {
-
         private readonly IDataAccess _dataAccess;
-        public HomeController(IDataAccess _dataAccess)
+        public HomeController(IDataAccess dataAccess, IDistributedCache distributedCache)
         {
-
-            this._dataAccess = _dataAccess;
-
+            _dataAccess = dataAccess;
         }
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Data data, string returnUrl = "/")
         {
-
             var result = await _dataAccess.CheckIfUsernameExists(data);
-            if (result == null)
+            if (result is null)
             {
                 await _dataAccess.RegisterUser(data);
                 await Login(new Data() { UserName = data.UserName, Password = data.Password, Id = data.Id });
@@ -89,7 +87,7 @@ namespace Services.Server.Controllers
             }
             catch (Exception e)
             {
-                e.LogException();
+
                 throw;
             }
             return Ok();
