@@ -77,20 +77,5 @@ namespace Services.Server.Controllers
             return Redirect("/");
         }
 
-        [Authorize]
-        [HttpPost("checkOut")]
-        public async Task<IActionResult> CheckOut(string ammount)
-        {
-            try
-            {
-
-            }
-            catch (Exception e)
-            {
-
-                throw;
-            }
-            return Ok();
-        }
     }
 }

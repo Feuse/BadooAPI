@@ -13,12 +13,15 @@ using RabbitMQScheduler;
 using RabbitMQScheduler.Interfaces;
 using RabbitMQScheduler.ServicesImpl;
 using ServicesInterfaces;
+using DataAccess;
+using Microsoft.Extensions.Options;
 
 namespace Services.Server
 {
     public class Startup
     {
         private Quartz.IScheduler _scheduler { get; }
+        public IConfiguration Configuration { get; }
         readonly string allowSpecificOrigins = "AllowAllHeaders";
         public Startup(IConfiguration configuration)
         {
@@ -26,13 +29,17 @@ namespace Services.Server
             _scheduler = QuartzInstance.Instance;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDistributedMemoryCache();
+
             services.AddStackExchangeRedisCache(options => options.Configuration = Configuration.GetConnectionString("Redis"));
+            services.Configure<AutoLoverDatabaseSettings>(
+       Configuration.GetSection(nameof(AutoLoverDatabaseSettings)));
+
+            services.AddSingleton<IAutoLoverDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<AutoLoverDatabaseSettings>>().Value);
             services.AddCors(options =>
             {
                 options.AddPolicy(allowSpecificOrigins, builder =>
@@ -43,7 +50,7 @@ namespace Services.Server
                 });
             });
             services.AddSingleton<IDataAccess, ServicesDataAccess>();
-            
+
             services.AddTransient<IServicesFactory, ServicesFactory>();
             services.AddTransient<IScheduler, Scheduler>();
             services.AddTransient<IQueue, QueueImpl>();
@@ -61,7 +68,7 @@ namespace Services.Server
                         var x = context;
                         await System.Threading.Tasks.Task.CompletedTask;
                     }
-                    };
+                };
             });
         }
 
