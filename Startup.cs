@@ -13,7 +13,6 @@ using RabbitMQScheduler;
 using RabbitMQScheduler.Interfaces;
 using RabbitMQScheduler.ServicesImpl;
 using ServicesInterfaces;
-using DataAccess;
 using Microsoft.Extensions.Options;
 
 namespace Services.Server
@@ -40,16 +39,17 @@ namespace Services.Server
 
             services.AddSingleton<IAutoLoverDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<AutoLoverDatabaseSettings>>().Value);
-            services.AddCors(options =>
+            services.AddCors(o => o.AddPolicy("AllowOrigins", builder =>
             {
-                options.AddPolicy(allowSpecificOrigins, builder =>
-                {
-                    builder.WithOrigins("https://localhost")
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-                });
-            });
+                builder.WithOrigins("https://localhost")
+                       .AllowAnyMethod()
+                       .AllowCredentials()
+                       .AllowAnyHeader();
+            }));
+           
             services.AddSingleton<IDataAccess, ServicesDataAccess>();
+            services.AddSingleton<ICacheDataAccess, ServicesDataAccessCache>();
+            services.AddSingleton<IDataAccessManager, DataAccessManager>();
 
             services.AddTransient<IServicesFactory, ServicesFactory>();
             services.AddTransient<IScheduler, Scheduler>();
@@ -75,7 +75,7 @@ namespace Services.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors(allowSpecificOrigins);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -86,7 +86,7 @@ namespace Services.Server
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("AllowOrigins");
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

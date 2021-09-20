@@ -19,19 +19,19 @@ namespace Services.Server.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IDataAccess _dataAccess;
-        public HomeController(IDataAccess dataAccess, IDistributedCache distributedCache)
+        private readonly IDataAccessManager _dataManager;
+        public HomeController(IDataAccessManager dataManager)
         {
-            _dataAccess = dataAccess;
+            _dataManager = dataManager;
         }
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Data data, string returnUrl = "/")
         {
-            var result = await _dataAccess.CheckIfUsernameExists(data);
+            var result = await _dataManager.CheckIfUsernameExists(data);
             if (result is null)
             {
-                await _dataAccess.RegisterUser(data);
+                await _dataManager.RegisterUser(data);
                 await Login(new Data() { UserName = data.UserName, Password = data.Password, Id = data.Id });
                 ////TEMP
                 return Ok();
@@ -47,11 +47,12 @@ namespace Services.Server.Controllers
         public async Task<IActionResult> Login([FromBody] Data data, string returnUrl = "/")
         {
             // var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var result = await _dataAccess.AuthenticateUser(data);
-            if (result != null)
+            var result = await _dataManager.AuthenticateUser(data);
+            if (result is not null)
             {
                 var claims = new List<Claim>();
                 claims.Add(new Claim("username", result.Username));
+    
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, result.Id));
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -59,6 +60,7 @@ namespace Services.Server.Controllers
                 CookieOptions options = new();
                 options.HttpOnly = false;
                 HttpContext.Response.Cookies.Append("username", result.Username, options);
+                HttpContext.Response.Cookies.Append("tutorial", result.SeenTutorial.ToString(), options);
                 // var username = HttpContext.User.FindFirst("username").Value;
                 //TEMP
                 return Ok(result.Username);
