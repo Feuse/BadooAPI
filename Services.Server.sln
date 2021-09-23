@@ -11,13 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicesInterfaces", "..\Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicesModels", "..\ServicesModels\ServicesModels.csproj", "{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQListenerService", "..\RabbitMQListenerService\RabbitMQListenerService.csproj", "{E00B835F-4903-4E0F-8575-322DB9A2E42F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "..\DataAccess\DataAccess.csproj", "{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "..\Scheduler\Scheduler.csproj", "{D5DBADF7-168C-4A08-8370-D7E2C9C9B8B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "..\Scheduler\Scheduler.csproj", "{D5DBADF7-168C-4A08-8370-D7E2C9C9B8B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagesQueue", "..\MessagesQueue\MessagesQueue.csproj", "{D4E1DD35-BB28-4571-A478-93E75BE705D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagesQueue", "..\MessagesQueue\MessagesQueue.csproj", "{D4E1DD35-BB28-4571-A478-93E75BE705D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagesListener", "..\MessagesListener\MessagesListener.csproj", "{9649BAC3-1B4C-4056-9241-46B8B220CA11}"
 EndProject
@@ -43,10 +41,6 @@ Global
 		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2A646A7-59F7-48B8-9353-B8D09AFDA9C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E00B835F-4903-4E0F-8575-322DB9A2E42F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC22D7F7-21BF-4B35-A9F3-F47869B353B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
