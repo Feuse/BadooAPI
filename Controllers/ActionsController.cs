@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using Newtonsoft.Json;
-using RabbitMQScheduler.Interfaces;
 using ServicesInterfaces;
 using ServicesModels;
 using System;
@@ -12,10 +11,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using RabbitMQScheduler.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using Services.Server.Utills;
 using DataAccess;
+using ServicesInterfaces.Scheduler;
 
 namespace Services.Server.Controllers
 {
@@ -38,22 +37,31 @@ namespace Services.Server.Controllers
 
         [Route("login")]
         [HttpPost]
-        public async Task<Data> Login(Data data)
+        public async Task<IActionResult> Login(Data data)
         {
             try
             {
                 data.Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                IService service = _factory.GetService(data.Service);
 
                 var UserServices = await _dataManager.GetAllUserServicesById(data);
 
-                if (UserServices is null)
+                if (UserServices.Count == 0)
                 {
-                    return null;
+                    service = _factory.GetService(data.Service);
+                    var user = await service.AppStartUp(data);
+                    await _dataManager.RegisterService(data);
+                 
+                    if(user.Result == Result.Success)
+                    {
+                        return Ok(data);
+                    }
+                    return BadRequest();
                 }
 
                 var singleService = UserServices.Where(a => a.Service == data.Service).FirstOrDefault();
 
-                IService service = _factory.GetService(data.Service);
+                service = _factory.GetService(data.Service);
 
                 data.Service = singleService.Service;
                 data.UserName = singleService.Username;
@@ -65,10 +73,10 @@ namespace Services.Server.Controllers
             }
             catch (Exception)
             {
-                return data;
+                return Ok(data);
 
             }
-            return data;
+            return Ok(data);
         }
 
         //Response Cache
@@ -244,9 +252,9 @@ namespace Services.Server.Controllers
                 //check cache for services
                 var UserServices = await _dataManager.GetAllUserServicesById(data);
 
-                if (UserServices is null)
+                if (UserServices.Count== 0 )
                 {
-                    return null;
+                    return servicesList;
                 }
 
                 foreach (var singleService in UserServices)

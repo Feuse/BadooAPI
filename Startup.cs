@@ -9,11 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using RabbitMQScheduler;
-using RabbitMQScheduler.Interfaces;
-using RabbitMQScheduler.ServicesImpl;
 using ServicesInterfaces;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.DataProtection;
+using System.IO;
+using Scheduler;
+using ServicesInterfaces.Scheduler;
+using MessagesQueue;
 
 namespace Services.Server
 {
@@ -41,37 +43,30 @@ namespace Services.Server
                 sp.GetRequiredService<IOptions<AutoLoverDatabaseSettings>>().Value);
             services.AddCors(o => o.AddPolicy("AllowOrigins", builder =>
             {
-                builder.WithOrigins("https://localhost")
+                builder.WithOrigins("https://localhost", "https://autolovers.000webhostapp.com")
                        .AllowAnyMethod()
                        .AllowCredentials()
                        .AllowAnyHeader();
             }));
-           
+
             services.AddSingleton<IDataAccess, ServicesDataAccess>();
             services.AddSingleton<ICacheDataAccess, ServicesDataAccessCache>();
             services.AddSingleton<IDataAccessManager, DataAccessManager>();
 
             services.AddTransient<IServicesFactory, ServicesFactory>();
-            services.AddTransient<IScheduler, Scheduler>();
-            services.AddTransient<IQueue, QueueImpl>();
+            services.AddTransient<IScheduler, Scheduler.Scheduler>();
+            services.AddTransient<IQueue, Queue>();
             services.AddTransient<SchedulerJob>();
             services.AddControllers();
             services.AddSingleton(provider => _scheduler);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                 options.Cookie.HttpOnly = true;
-                options.LoginPath = "/login";
-                options.Events = new CookieAuthenticationEvents()
-                {
-                    OnSigningIn = async context =>
-                    {
-                        var x = context;
-                        await System.Threading.Tasks.Task.CompletedTask;
-                    }
-                };
+               // options.LoginPath = "/login";
             });
-        }
 
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

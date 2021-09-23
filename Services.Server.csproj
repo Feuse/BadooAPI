@@ -25,7 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\BadooAPI\BadooAPI.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\RabbitMQScheduler\QuartzScheduler.csproj" />
+    <ProjectReference Include="..\MessagesQueue\MessagesQueue.csproj" />
+    <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
     <ProjectReference Include="..\ServicesInterfaces\ServicesInterfaces.csproj" />
     <ProjectReference Include="..\ServicesModels\ServicesModels.csproj" />
   </ItemGroup>

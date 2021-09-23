@@ -46,19 +46,24 @@ namespace Services.Server.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Data data, string returnUrl = "/")
         {
+ 
             // var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var result = await _dataManager.AuthenticateUser(data);
             if (result is not null)
             {
+                CookieOptions options = new();
+                options.Secure = true;
+                options.SameSite = SameSiteMode.None;
+                options.HttpOnly = false;
                 var claims = new List<Claim>();
                 claims.Add(new Claim("username", result.Username));
     
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, result.Id));
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+              
                 await HttpContext.SignInAsync(claimsPrincipal);
-                CookieOptions options = new();
-                options.HttpOnly = false;
                 HttpContext.Response.Cookies.Append("username", result.Username, options);
                 HttpContext.Response.Cookies.Append("tutorial", result.SeenTutorial.ToString(), options);
                 // var username = HttpContext.User.FindFirst("username").Value;
@@ -73,10 +78,11 @@ namespace Services.Server.Controllers
         }
 
         [Authorize]
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return Redirect("/");
+            return Ok();
         }
 
     }
