@@ -16,31 +16,51 @@ using System.IO;
 using Scheduler;
 using ServicesInterfaces.Scheduler;
 using MessagesQueue;
+using Quartz;
+using Services.Server.Utills;
+using ServicesInterfaces.Global;
+using Autofac;
+using BadooAPI;
+using Divergic.Configuration.Autofac;
+using System;
 
 namespace Services.Server
 {
     public class Startup
     {
-        private Quartz.IScheduler _scheduler { get; }
+        private Quartz.IScheduler _scheduler { get; set; }
         public IConfiguration Configuration { get; }
         readonly string allowSpecificOrigins = "AllowAllHeaders";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _scheduler = QuartzInstance.Instance;
         }
+        // Autofac container builder
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
 
+            var someSettings = Configuration.GetSection(typeof(AppSettings).Name).Get<AppSettings>();
+
+            builder.Register(c => someSettings).As<IAppSettings>();
+
+            builder.RegisterType<QuartzInstance>()
+        .WithProperty(nameof(AppSettings), someSettings);
+            _scheduler = QuartzInstance.Instance;
+
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
             services.AddStackExchangeRedisCache(options => options.Configuration = Configuration.GetConnectionString("Redis"));
-            services.Configure<AutoLoverDatabaseSettings>(
-       Configuration.GetSection(nameof(AutoLoverDatabaseSettings)));
 
-            services.AddSingleton<IAutoLoverDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<AutoLoverDatabaseSettings>>().Value);
+            services.Configure<AppSettings>(
+       Configuration.GetSection(nameof(AppSettings)));
+
+            services.AddSingleton<IAppSettings>(sp =>
+               sp.GetRequiredService<IOptions<AppSettings>>().Value);
+
             services.AddCors(o => o.AddPolicy("AllowOrigins", builder =>
             {
                 builder.WithOrigins("https://localhost", "https://autolovers.000webhostapp.com")
@@ -48,17 +68,19 @@ namespace Services.Server
                        .AllowCredentials()
                        .AllowAnyHeader();
             }));
-
+            services.AddTransient<IServicesFactory, ServicesFactory>();
             services.AddSingleton<IDataAccess, ServicesDataAccess>();
+         
             services.AddSingleton<ICacheDataAccess, ServicesDataAccessCache>();
             services.AddSingleton<IDataAccessManager, DataAccessManager>();
-
+           
             services.AddTransient<IServicesFactory, ServicesFactory>();
-            services.AddTransient<IScheduler, Scheduler.Scheduler>();
+            services.AddTransient<ServicesInterfaces.Scheduler.IScheduler, Scheduler.Scheduler>();
             services.AddTransient<IQueue, Queue>();
             services.AddTransient<SchedulerJob>();
             services.AddControllers();
             services.AddSingleton(provider => _scheduler);
+            services.AddAutoMapper(typeof(DataMapper));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;

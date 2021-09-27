@@ -32,7 +32,7 @@ namespace Services.Server.Controllers
             if (result is null)
             {
                 await _dataManager.RegisterUser(data);
-                await Login(new Data() { UserName = data.UserName, Password = data.Password, Id = data.Id });
+                await Login(new Data() { Username = data.Username, Password = data.Password, Id = data.Id });
                 ////TEMP
                 return Ok();
                 //return Redirect(returnUrl);

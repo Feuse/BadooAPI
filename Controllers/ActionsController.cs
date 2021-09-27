@@ -15,6 +15,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Services.Server.Utills;
 using DataAccess;
 using ServicesInterfaces.Scheduler;
+using AutoMapper;
 
 namespace Services.Server.Controllers
 {
@@ -26,13 +27,13 @@ namespace Services.Server.Controllers
         private readonly IServicesFactory _factory;
         private readonly IScheduler _scheduler;
         private readonly IDataAccessManager _dataManager;
-
-        public ActionsController(IServicesFactory _factory, IScheduler _scheduler, IDataAccessManager dataAccess)
+        private readonly IMapper _mapper;
+        public ActionsController(IServicesFactory factory, IScheduler scheduler, IDataAccessManager dataAccess, IMapper mapper)
         {
-
-            this._factory = _factory;
-            this._scheduler = _scheduler;
+            _factory = factory;
+            _scheduler = scheduler;
             _dataManager = dataAccess;
+            _mapper = mapper;
         }
 
         [Route("login")]
@@ -63,15 +64,12 @@ namespace Services.Server.Controllers
 
                 service = _factory.GetService(data.Service);
 
-                data.Service = singleService.Service;
-                data.UserName = singleService.Username;
-                data.Password = singleService.Password;
-                data.UserServiceId = singleService.UserServiceId;
-
+                data = _mapper.Map(singleService,data);
+            
                 await GetSingleServiceSession(data, singleService, new ServiceSessions(), service);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return Ok(data);
 
@@ -97,8 +95,9 @@ namespace Services.Server.Controllers
                 }
 
                 var userService = await _dataManager.GetUserServiceByServiceNameAndId(data);
-                data.UserName = userService.Username;
-                data.Password = userService.Password;
+
+                data = _mapper.Map(userService, data);
+             
                 await Login(data);
 
                 images = await service.GetImages(data);
@@ -140,10 +139,7 @@ namespace Services.Server.Controllers
                 {
                     return result;
                 }
-                data.UserServiceId = session.SerivceId;
-                data.SessionId = session.SessionId;
-                data.HiddenUrl = session.HiddenUrl;
-
+                data = _mapper.Map(session, data);
 
                 result = await service.RemoveImage(data);
                 await _dataManager.RemoveUserImage(data, result);
@@ -164,8 +160,7 @@ namespace Services.Server.Controllers
 
             try
             {
-                var files = Request.Form.Files.FirstOrDefault();
-                data.File = files;
+                data.File = Request.Form.Files.FirstOrDefault();
 
                 await Login(data);
 
@@ -174,10 +169,7 @@ namespace Services.Server.Controllers
 
                 var resultObject = JsonConvert.DeserializeObject<PhotosResultModel>(result);
 
-                var id = resultObject.PhotoId;
-                var url = resultObject.PhotoUrl;
-
-                images.Add(id, url);
+                images.Add(resultObject.PhotoId, resultObject.PhotoUrl);
 
                 return images;
             }
@@ -215,29 +207,7 @@ namespace Services.Server.Controllers
                 //log
             }
         }
-        //[Route("test")]
-        //[HttpGet]
-        //public async Task test()
-        //{
-        //    var id = "612e9a9bdc777780ab55c97a";
-        //    var UserServices = await _dataManager.GetRecordAsync<List<UserServiceCredentials>>($"userServices|{id}");
-        //    var data = new Data() { Id = id };
-        //    if (UserServices is null)
-        //    {
-        //        UserServices = await _dataManager.GetAllUserServicesById(data);
-
-        //        if (UserServices is null)
-        //        {
-
-        //        }
-        //        else
-        //        {
-        //            await _dataManager.SetRecordAsync($"userServices|{id}", UserServices);
-        //        }
-        //        //cache after retrieving from db 
-        //    }
-        //}
-
+       
         [Route("authServices")]
         [HttpGet]
         public async Task<List<Service>> AuthenticateUserServices()
@@ -260,11 +230,7 @@ namespace Services.Server.Controllers
                 foreach (var singleService in UserServices)
                 {
                     IService service = _factory.GetService(singleService.Service);
-
-                    data.Service = singleService.Service;
-                    data.UserName = singleService.Username;
-                    data.Password = singleService.Password;
-                    data.UserServiceId = singleService.UserServiceId;
+                    data = _mapper.Map(singleService, data);
 
                     await GetServicesSessions(servicesList, data, singleService, service);
                 }
@@ -305,8 +271,7 @@ namespace Services.Server.Controllers
             }
             else
             {
-                data.SessionId = chachedSession.SessionId;
-                data.HiddenUrl = chachedSession.HiddenUrl;
+                data = _mapper.Map(chachedSession, data);
             }
         }
         private async Task TryGetAndUpdateSession(Data data)
