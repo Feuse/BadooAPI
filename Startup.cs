@@ -68,13 +68,12 @@ namespace Services.Server
                        .AllowCredentials()
                        .AllowAnyHeader();
             }));
-            services.AddTransient<IServicesFactory, ServicesFactory>();
+
             services.AddSingleton<IDataAccess, ServicesDataAccess>();
          
             services.AddSingleton<ICacheDataAccess, ServicesDataAccessCache>();
             services.AddSingleton<IDataAccessManager, DataAccessManager>();
-           
-            services.AddTransient<IServicesFactory, ServicesFactory>();
+
             services.AddTransient<ServicesInterfaces.Scheduler.IScheduler, Scheduler.Scheduler>();
             services.AddTransient<IQueue, Queue>();
             services.AddTransient<SchedulerJob>();
