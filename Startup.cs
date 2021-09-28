@@ -23,17 +23,23 @@ using Autofac;
 using BadooAPI;
 using Divergic.Configuration.Autofac;
 using System;
+using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Extensions.Logging;
 
 namespace Services.Server
 {
     public class Startup
     {
+        private Microsoft.Extensions.Logging.ILogger Logger { get; }
         private Quartz.IScheduler _scheduler { get; set; }
         public IConfiguration Configuration { get; }
         readonly string allowSpecificOrigins = "AllowAllHeaders";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            var nlogLoggerProvider = new NLogLoggerProvider();
+            Logger = nlogLoggerProvider.CreateLogger(typeof(Startup).FullName);
         }
         // Autofac container builder
         public void ConfigureContainer(ContainerBuilder builder)
@@ -52,7 +58,7 @@ namespace Services.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.AddStackExchangeRedisCache(options => options.Configuration = Configuration.GetConnectionString("Redis"));
 
             services.Configure<AppSettings>(
@@ -68,7 +74,7 @@ namespace Services.Server
                        .AllowCredentials()
                        .AllowAnyHeader();
             }));
-
+            services.AddSingleton<IServicesFactory, ServicesFactory>();
             services.AddSingleton<IDataAccess, ServicesDataAccess>();
          
             services.AddSingleton<ICacheDataAccess, ServicesDataAccessCache>();
@@ -76,6 +82,7 @@ namespace Services.Server
 
             services.AddTransient<ServicesInterfaces.Scheduler.IScheduler, Scheduler.Scheduler>();
             services.AddTransient<IQueue, Queue>();
+            
             services.AddTransient<SchedulerJob>();
             services.AddControllers();
             services.AddSingleton(provider => _scheduler);
@@ -98,7 +105,15 @@ namespace Services.Server
 
             }
 
-            _scheduler.JobFactory = new AspnetCoreJobFactory(app.ApplicationServices);
+            try
+            {
+                _scheduler.JobFactory = new AspnetCoreJobFactory(app.ApplicationServices);
+            }
+            catch (Exception e)
+            {
+                Logger.LogCritical(e.Message);
+                Logger.LogTrace(e.StackTrace);
+            }
             app.UseHttpsRedirection();
 
             app.UseRouting();

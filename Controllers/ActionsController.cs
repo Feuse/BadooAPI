@@ -16,6 +16,7 @@ using Services.Server.Utills;
 using DataAccess;
 using ServicesInterfaces.Scheduler;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace Services.Server.Controllers
 {
@@ -28,12 +29,14 @@ namespace Services.Server.Controllers
         private readonly IScheduler _scheduler;
         private readonly IDataAccessManager _dataManager;
         private readonly IMapper _mapper;
-        public ActionsController(IServicesFactory factory, IScheduler scheduler, IDataAccessManager dataAccess, IMapper mapper)
+        private readonly ILogger<ActionsController> _logger;
+        public ActionsController(IServicesFactory factory, IScheduler scheduler, IDataAccessManager dataAccess, IMapper mapper, ILogger<ActionsController> logger)
         {
             _factory = factory;
             _scheduler = scheduler;
             _dataManager = dataAccess;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [Route("login")]
@@ -71,6 +74,8 @@ namespace Services.Server.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
                 return Ok(data);
 
             }
@@ -108,8 +113,10 @@ namespace Services.Server.Controllers
                 }
                 return images;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
                 return images;
             }
         }
@@ -144,8 +151,10 @@ namespace Services.Server.Controllers
                 result = await service.RemoveImage(data);
                 await _dataManager.RemoveUserImage(data, result);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
                 return result;
             }
             return result;
@@ -173,8 +182,10 @@ namespace Services.Server.Controllers
 
                 return images;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
                 return images;
             }
         }
@@ -202,9 +213,10 @@ namespace Services.Server.Controllers
                     });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //log
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
             }
         }
        
@@ -235,8 +247,11 @@ namespace Services.Server.Controllers
                     await GetServicesSessions(servicesList, data, singleService, service);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
+
                 servicesList.Clear();
                 return servicesList;
             }
@@ -245,45 +260,70 @@ namespace Services.Server.Controllers
 
         private async Task GetServicesSessions(List<Service> servicesList, Data data, UserServiceCredentials singleService, IService service)
         {
-            var chachedSession = await _dataManager.GetServiceSession(data);
 
-            if (chachedSession is null)
+            try
             {
-                // No session, log in to user and update session.
-                data = await service.AppStartUp(data);
-                await TryGetAndUpdateSession(data);
-                servicesList.Add(singleService.Service);
+                var chachedSession = await _dataManager.GetServiceSession(data);
+
+                if (chachedSession is null)
+                {
+                    // No session, log in to user and update session.
+                    data = await service.AppStartUp(data);
+                    await TryGetAndUpdateSession(data);
+                    servicesList.Add(singleService.Service);
+                }
+                else
+                {
+                    servicesList.Add(singleService.Service);
+                }
             }
-            else
+            catch (Exception e)
             {
-                servicesList.Add(singleService.Service);
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
             }
         }
         private async Task GetSingleServiceSession(Data data, UserServiceCredentials singleService, ServiceSessions singleSession, IService service)
         {
-            var chachedSession = await _dataManager.GetServiceSession(data);
+            try
+            {
+                var chachedSession = await _dataManager.GetServiceSession(data);
 
-            if (chachedSession is null)
-            {
-                // No session, log in to user and update session.
-                var result = await service.AppStartUp(data);
-                await TryGetAndUpdateSession(result);
+                if (chachedSession is null)
+                {
+                    // No session, log in to user and update session.
+                    var result = await service.AppStartUp(data);
+                    await TryGetAndUpdateSession(result);
+                }
+                else
+                {
+                    data = _mapper.Map(chachedSession, data);
+                }
             }
-            else
+            catch (Exception e)
             {
-                data = _mapper.Map(chachedSession, data);
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
             }
         }
         private async Task TryGetAndUpdateSession(Data data)
         {
-            if (data.Result == Result.Success)
+            try
             {
-                await _dataManager.UpdateServiceSession(data);
+                if (data.Result == Result.Success)
+                {
+                    await _dataManager.UpdateServiceSession(data);
+                }
+                else
+                {
+                    //if unable to log into service, remove service and session.
+                    await _dataManager.RemoveServiceFromUser(data);
+                }
             }
-            else
+            catch (Exception e)
             {
-                //if unable to log into service, remove service and session.
-                await _dataManager.RemoveServiceFromUser(data);
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
             }
         }
 
@@ -298,9 +338,11 @@ namespace Services.Server.Controllers
                 await service.UpdateAboutMe(data);
                 return data.About;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //log
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
+
                 return "unable to update";
             }
         }
@@ -309,10 +351,18 @@ namespace Services.Server.Controllers
         [HttpPost]
         public async Task SeenTutorial(Data data)
         {
-            var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            data.Id = id;
+            try
+            {
+                var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                data.Id = id;
 
-            await _dataManager.UpdateUser(data);
+                await _dataManager.UpdateUser(data);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                _logger.LogTrace(e.StackTrace);
+            }
         }
     }
 }
