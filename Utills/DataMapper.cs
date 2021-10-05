@@ -9,6 +9,7 @@ namespace Services.Server.Utills
         {
             CreateMap<UserServiceCredentials, Data>();
             CreateMap<ServiceSessions, Data>();
+            CreateMap<UserCredentials, Data>().ForMember(x => x.About, opt => opt.Ignore());
         }
     }
 }

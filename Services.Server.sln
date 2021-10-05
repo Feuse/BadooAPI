@@ -19,6 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagesQueue", "..\Message
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagesListener", "..\MessagesListener\MessagesListener.csproj", "{9649BAC3-1B4C-4056-9241-46B8B220CA11}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1EE5FDB6-B460-4600-A917-9C99A8C63D29}"
+	ProjectSection(SolutionItems) = preProject
+		test.json = test.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicesFacade", "..\ServicesFacade\ServicesFacade.csproj", "{6B355EA8-A5CF-4B53-9365-499E26F1DB8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +64,10 @@ Global
 		{9649BAC3-1B4C-4056-9241-46B8B220CA11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9649BAC3-1B4C-4056-9241-46B8B220CA11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9649BAC3-1B4C-4056-9241-46B8B220CA11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B355EA8-A5CF-4B53-9365-499E26F1DB8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B355EA8-A5CF-4B53-9365-499E26F1DB8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B355EA8-A5CF-4B53-9365-499E26F1DB8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B355EA8-A5CF-4B53-9365-499E26F1DB8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ServicesInterfaces.Global;
+using ServicesModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -16,7 +17,6 @@ namespace Services.Server.Utills {
         public string Queue { get; set; }
         public string ServiceSessionsCollectionName { get; set; }
         public string UserCredentialsCollectionName { get; set; }
-        public string ConnectionString { get; set; }
         public string DatabaseName { get; set; }
 
         [JsonProperty("quartz.scheduler.instanceName")]
@@ -35,6 +35,8 @@ namespace Services.Server.Utills {
         public string Provider { get; set; }
         [JsonProperty("quartz.serializer.type")]
         public string Type { get; set; }
-
+        public string AMQP_URL { get; set; }
+        public string ConnectionString { get; set; }
+        public Redis Redis { get; set; }
     }
 }

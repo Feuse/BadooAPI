@@ -26,11 +26,24 @@ using System;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core;
+using StackExchange.Redis.Extensions.Newtonsoft;
+using ServicesFacade;
+using ServicesInterfaces.Facades;
+using ServicesInterfaces.DataAccess;
+using ServicesInterfaces.DataAccess.Cache;
+using DataAccess.Cache;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
+using Autofac.Extensions.DependencyInjection;
 
 namespace Services.Server
 {
     public class Startup
     {
+        public ILifetimeScope AutofacContainer { get; private set; }
+
         private Microsoft.Extensions.Logging.ILogger Logger { get; }
         private Quartz.IScheduler _scheduler { get; set; }
         public IConfiguration Configuration { get; }
@@ -40,69 +53,84 @@ namespace Services.Server
             Configuration = configuration;
             var nlogLoggerProvider = new NLogLoggerProvider();
             Logger = nlogLoggerProvider.CreateLogger(typeof(Startup).FullName);
-        }
-        // Autofac container builder
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-
-            var someSettings = Configuration.GetSection(typeof(AppSettings).Name).Get<AppSettings>();
-
-            builder.Register(c => someSettings).As<IAppSettings>();
-
-            builder.RegisterType<QuartzInstance>()
-        .WithProperty(nameof(AppSettings), someSettings);
             _scheduler = QuartzInstance.Instance;
-
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            services.AddStackExchangeRedisCache(options => options.Configuration = Configuration.GetConnectionString("Redis"));
+         
+
+            #region Configuration file
+            var redisConfiguration = Configuration.GetSection("AppSettings:Redis").Get<RedisConfiguration>();
+
+            services.AddStackExchangeRedisCache(options=>
+                options.ConfigurationOptions = redisConfiguration.ConfigurationOptions);
 
             services.Configure<AppSettings>(
-       Configuration.GetSection(nameof(AppSettings)));
+                Configuration.GetSection(nameof(AppSettings)));
 
             services.AddSingleton<IAppSettings>(sp =>
                sp.GetRequiredService<IOptions<AppSettings>>().Value);
+            #endregion
+
+            #region Facades 
+            services.AddSingleton<IActionsFacade, ActionsFacade>();
+            services.AddSingleton<ILoginFacade, LoginFacade>();
+            services.AddSingleton<IUserFacade, UserFacade>();
+            services.AddSingleton<IUserServicesFacade, UserServicesFacade>();
+            services.AddSingleton<IServicesFactory, ServicesFactory>();
+            #endregion
+
+            #region DataAccess
+            services.AddSingleton<IServiceDataAccess, ServicesDataAccess>();
+            services.AddSingleton<IUserDataAccess, UserDataAccess>();
+            services.AddSingleton<IUserCacheAccess, UserCacheAccess>();
+            services.AddSingleton<IServiceCacheAccess, ServicesCacheAccess>();
+            services.AddSingleton<IDataAccessManager, DataAccessManager>();
+
+            var options = new DistributedCacheEntryOptions()
+                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+            services.AddSingleton<DistributedCacheEntryOptions>(options);
+            #endregion
+
+            #region Scheduler
+            services.AddTransient<ServicesInterfaces.Scheduler.IScheduler, Scheduler.Scheduler>();
+            services.AddTransient<SchedulerJob>();
+            services.AddSingleton(provider => _scheduler);
+            #endregion
+
+            #region Queue
+            services.AddTransient<IQueue, Queue>();
+            #endregion
+
+            #region Utills
+            services.AddAutoMapper(typeof(DataMapper));
+            #endregion
 
             services.AddCors(o => o.AddPolicy("AllowOrigins", builder =>
             {
-                builder.WithOrigins("https://localhost", "https://autolovers.000webhostapp.com")
+                builder.WithOrigins("https://localhost", "https://www.autolovers.com")
                        .AllowAnyMethod()
                        .AllowCredentials()
                        .AllowAnyHeader();
             }));
-            services.AddSingleton<IServicesFactory, ServicesFactory>();
-            services.AddSingleton<IDataAccess, ServicesDataAccess>();
-         
-            services.AddSingleton<ICacheDataAccess, ServicesDataAccessCache>();
-            services.AddSingleton<IDataAccessManager, DataAccessManager>();
 
-            services.AddTransient<ServicesInterfaces.Scheduler.IScheduler, Scheduler.Scheduler>();
-            services.AddTransient<IQueue, Queue>();
-            
-            services.AddTransient<SchedulerJob>();
             services.AddControllers();
-            services.AddSingleton(provider => _scheduler);
-            services.AddAutoMapper(typeof(DataMapper));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                 options.Cookie.HttpOnly = true;
-               // options.LoginPath = "/login";
+               // options.Cookie.Domain = ".autolovers.com";
+                // options.LoginPath = "/login";
             });
-
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
             }
 
             try
@@ -115,7 +143,6 @@ namespace Services.Server
                 Logger.LogTrace(e.StackTrace);
             }
             app.UseHttpsRedirection();
-
             app.UseRouting();
             app.UseCors("AllowOrigins");
             app.UseAuthentication();
