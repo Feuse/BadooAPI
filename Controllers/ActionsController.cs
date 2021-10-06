@@ -35,7 +35,7 @@ namespace Services.Server.Controllers
         }
         [Route("getImages")]
         [HttpPost]
-        public async Task<IDictionary<string, string>> GetImages(Data data)
+        public async Task<IActionResult> GetImages(Data data)
         {
             IDictionary<string, string> images = new Dictionary<string, string>();
             try
@@ -43,11 +43,11 @@ namespace Services.Server.Controllers
                 data.Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 images = await _actionsFacade.GetImages(data);
 
-                return images;
+                return Ok(images);
             }
             catch (Exception)
             {
-                return images;
+                return NotFound(images);
             }
         }
         [Route("removeImage")]
@@ -116,7 +116,7 @@ namespace Services.Server.Controllers
             {
                 return Ok(await _actionsFacade.UpdateAboutMe(data));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return BadRequest();
             }
