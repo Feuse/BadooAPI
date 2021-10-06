@@ -16,15 +16,15 @@ namespace Services.Server
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-           // .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>().ConfigureLogging(logging =>
                     {
                         logging.ClearProviders();
                         logging.SetMinimumLevel(LogLevel.Information);
-                    });
-            //.UseNLog();
+                    })
+            .UseNLog();
                 });
     }
 }

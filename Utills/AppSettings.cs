@@ -7,7 +7,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Services.Server.Utills { 
+namespace Services.Server.Utills
+{
 
     public class AppSettings : IAppSettings
     {
@@ -38,5 +39,6 @@ namespace Services.Server.Utills {
         public string AMQP_URL { get; set; }
         public string ConnectionString { get; set; }
         public Redis Redis { get; set; }
+        public string JsonApiRequestsPath { get; set; }
     }
 }

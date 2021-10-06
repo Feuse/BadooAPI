@@ -37,6 +37,7 @@ using DataAccess.Cache;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text;
 using Autofac.Extensions.DependencyInjection;
+using System.Collections.Specialized;
 
 namespace Services.Server
 {
@@ -55,7 +56,8 @@ namespace Services.Server
             Logger = nlogLoggerProvider.CreateLogger(typeof(Startup).FullName);
             _scheduler = QuartzInstance.Instance;
         }
-
+       
+      
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -115,7 +117,7 @@ namespace Services.Server
                        .AllowCredentials()
                        .AllowAnyHeader();
             }));
-
+            
             services.AddControllers();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {

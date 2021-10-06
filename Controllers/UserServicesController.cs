@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BadooAPI.Factories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -45,14 +46,14 @@ namespace Services.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> AuthenticateUserServices()
         {
+          
             var servicesList = new List<UserServiceCredentials>();
             try
             {
                 var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 servicesList = await _userServicesFacade.AuthenticateUserServices(id);
 
-                    return Ok(servicesList);
-     
+                return Ok(servicesList);
             }
             catch (Exception)
             {
