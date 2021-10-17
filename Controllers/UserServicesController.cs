@@ -34,7 +34,9 @@ namespace Services.Server.Controllers
             {
                 data.Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 data = await _userServicesFacade.LoginToService(data);
+                if(data.Result == Result.Success)
                 return Ok(data);
+                else return BadRequest();
             }
             catch (Exception)
             {
