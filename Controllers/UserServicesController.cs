@@ -34,9 +34,9 @@ namespace Services.Server.Controllers
             {
                 data.Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 data = await _userServicesFacade.LoginToService(data);
-                if(data.Result == Result.Success)
-                return Ok(data);
-                else return BadRequest();
+                if (data.Result == Result.Success)
+                    return Ok(data);
+                return BadRequest();
             }
             catch (Exception)
             {
@@ -48,14 +48,17 @@ namespace Services.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> AuthenticateUserServices()
         {
-          
+
             var servicesList = new List<UserServiceCredentials>();
             try
             {
                 var id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 servicesList = await _userServicesFacade.AuthenticateUserServices(id);
-
-                return Ok(servicesList);
+                if (servicesList.Count > 0)
+                {
+                    return Ok(servicesList);
+                }
+                return BadRequest(servicesList);
             }
             catch (Exception)
             {
