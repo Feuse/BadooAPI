@@ -112,10 +112,10 @@ namespace Services.Server
 
             services.AddCors(o => o.AddPolicy("AllowOrigins", builder =>
             {
-                //builder.WithOrigins("https://localhost", "https://www.autolovers.com")
-                      // .AllowAnyMethod()
-                      // .AllowCredentials()
-                       //.AllowAnyHeader();
+                builder.WithOrigins("https://localhost", "https://www.autolovers.com")
+                       .AllowAnyMethod()
+                       .AllowCredentials()
+                       .AllowAnyHeader();
             }));
             
             services.AddControllers();
